@@ -1,4 +1,4 @@
-import { SaveTransaction } from "ynab";
+import { SaveTransaction, TransactionDetail } from "ynab";
 
 export abstract class Provider {
   abstract readonly slug: string;
@@ -6,12 +6,17 @@ export abstract class Provider {
     accountNumber: string,
     startDate: Date,
     endDate?: Date
-  ): Promise<SaveTransaction[]>;
+  ): Promise<BankTransaction[]>;
 
   protected getImportIdPrefix(): string {
-    return `RS:${this.slug}:`;
+    return `RS:`;
   }
 }
+
+export type BankTransaction = Pick<
+  TransactionDetail,
+  "date" | "amount" | "memo" | "cleared" | "import_id" | "payee_name"
+>;
 
 export interface Config {
   token: string;

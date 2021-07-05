@@ -1,5 +1,5 @@
 import axios from "axios";
-import { SaveTransaction } from "ynab";
+import { SaveTransaction, TransactionDetail } from "ynab";
 import config from "../config";
 import { Provider } from "../types";
 import * as tough from "tough-cookie";
@@ -9,6 +9,7 @@ import { format, formatISO, parse } from "date-fns";
 import cheerio from "cheerio";
 import axiosCookieJarSupport from "axios-cookiejar-support";
 import * as csvParse from "csv-parse";
+import { BankTransaction } from "../types";
 
 interface MobiBankaTransactionRecord {
   CreditorName: string;
@@ -32,7 +33,7 @@ class MobiBanka extends Provider {
     accountNumber: string,
     startDate: Date,
     endDate?: Date
-  ): Promise<SaveTransaction[]> {
+  ): Promise<BankTransaction[]> {
     const { username, password } = config.providers["mobi-banka"];
 
     axiosCookieJarSupport(axios);
@@ -92,7 +93,7 @@ class MobiBanka extends Provider {
       record: MobiBankaTransactionRecord;
       status: keyof typeof StatusMapping;
     }[] = [];
-    const transactions: SaveTransaction[] = [];
+    const transactions: BankTransaction[] = [];
 
     for (const statusName in StatusMapping) {
       logger.debug(`Requesting CSV export for status '${statusName}'...`);
@@ -163,8 +164,8 @@ class MobiBanka extends Provider {
       const inflow =
         record.CreditorAccountNumber === sanitizeAccountNumber(accountNumber);
       const amount = inflow
-        ? amountToMilliunits(record.CurrencyAmount) * -1
-        : amountToMilliunits(record.CurrencyAmount);
+        ? amountToMilliunits(record.CurrencyAmount)
+        : amountToMilliunits(record.CurrencyAmount) * -1;
       const date = parse(record.ValueDate, "d.M.yyyy", new Date());
       const occurrence =
         transactions.filter(
@@ -174,10 +175,9 @@ class MobiBanka extends Provider {
         ).length + 1;
 
       transactions.push({
-        account_id: "",
         date: formatISO(date, { representation: "date" }),
         amount,
-        payee_name: inflow ? record.CreditorName : undefined,
+        payee_name: inflow ? undefined : record.CreditorName,
         memo:
           record.PurposeDescription !== record.CreditorName
             ? record.PurposeDescription

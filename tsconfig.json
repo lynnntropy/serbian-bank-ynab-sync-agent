@@ -2,7 +2,8 @@
   "compilerOptions": {
     "outDir": "dist/",
     "resolveJsonModule": true,
-    "esModuleInterop": false
+    "esModuleInterop": false,
+    "downlevelIteration": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]
