@@ -11,13 +11,20 @@
   "devDependencies": {
     "@types/node": "^14.14.41",
     "@types/pino": "^6.3.7",
+    "@types/tough-cookie": "^4.0.1",
     "nodemon": "^2.0.7",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.4"
   },
   "dependencies": {
     "axios": "^0.21.1",
+    "axios-cookiejar-support": "^1.0.1",
+    "cheerio": "^1.0.0-rc.10",
+    "csv-parse": "^4.16.0",
     "date-fns": "^2.21.1",
-    "pino": "^6.11.3"
+    "pino": "^6.11.3",
+    "pino-pretty": "^5.1.0",
+    "tough-cookie": "^4.0.0",
+    "ynab": "^1.25.0"
   }
 }

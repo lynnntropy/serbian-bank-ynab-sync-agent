@@ -9,3 +9,4 @@ services:
       - ./:/app
     environment:
       NODE_OPTIONS: "--unhandled-rejections=throw"
+      LOG_LEVEL: ~
