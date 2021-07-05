@@ -1,14 +1,22 @@
+import { CronJob } from "cron";
 import { sub } from "date-fns";
 import config from "./config";
+import environment from "./environment";
 import logger from "./logger";
 import providers from "./providers";
 
-(async () => {
+const sync = async () => {
+  logger.info("Synchronizing accounts...");
+
   for (const accountConfig of config.accounts) {
     const provider = providers.find((p) => p.slug === accountConfig.provider);
     if (!provider) {
       throw new Error(`Provider '${accountConfig.provider}' not recognized.`);
     }
+
+    logger.info(
+      `Fetching transactions for account no. ${accountConfig.sourceAccountNumber} (provider ${provider.slug})...`
+    );
 
     let transactions = await provider.fetchTransactions(
       accountConfig.sourceAccountNumber,
@@ -22,7 +30,14 @@ import providers from "./providers";
 
     logger.trace(transactions);
     logger.debug(
-      `Provider ${provider.slug} returned ${transactions.length} transactions.`
+      `Provider ${provider.slug} (account no. ${accountConfig.sourceAccountNumber}) returned ${transactions.length} transactions.`
     );
   }
-})();
+};
+
+if (environment.isProduction) {
+  new CronJob("*/5 * * * *", sync, null, true);
+} else {
+  logger.info("Starting in development mode (will sync once and exit).");
+  sync();
+}

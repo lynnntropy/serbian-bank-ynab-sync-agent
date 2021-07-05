@@ -9,6 +9,7 @@
     "build": "tsc"
   },
   "devDependencies": {
+    "@types/cron": "^1.7.2",
     "@types/node": "^14.14.41",
     "@types/pino": "^6.3.7",
     "@types/tough-cookie": "^4.0.1",
@@ -20,6 +21,7 @@
     "axios": "^0.21.1",
     "axios-cookiejar-support": "^1.0.1",
     "cheerio": "^1.0.0-rc.10",
+    "cron": "^1.8.2",
     "csv-parse": "^4.16.0",
     "date-fns": "^2.21.1",
     "pino": "^6.11.3",
