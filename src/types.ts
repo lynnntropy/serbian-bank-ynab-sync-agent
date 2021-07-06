@@ -26,7 +26,7 @@ export interface Config {
   accounts: AccountConfig[];
 }
 
-interface AccountConfig {
+export interface AccountConfig {
   budgetId: string;
   provider: string;
   sourceAccountNumber: string;
