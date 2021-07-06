@@ -130,6 +130,9 @@ const processAccount = async (
 };
 
 if (environment.isProduction) {
+  logger.info(
+    "Starting in production mode (will sync accounts on a schedule)."
+  );
   new CronJob("*/5 * * * *", sync, null, true);
 } else {
   logger.info("Starting in development mode (will sync once and exit).");
