@@ -1,7 +1,7 @@
 import { CronJob } from "cron";
 import { formatISO, sub } from "date-fns";
 import { isEqual } from "lodash";
-import { SaveTransaction, UpdateTransaction } from "ynab";
+import { SaveTransaction, TransactionDetail, UpdateTransaction } from "ynab";
 import { AccountConfig } from "./types";
 import "./axios";
 import config from "./config";
@@ -94,6 +94,52 @@ const processAccount = async (
         ...bankTransaction,
         account_id: accountConfig.targetAccountId,
       });
+    }
+  }
+
+  // If this flag is enabled, match new (cleared) transactions
+  // to current uncleared transactions in the same account
+
+  if (accountConfig.matchNewTransactionsWithUncleared && toCreate.length > 0) {
+    while (true) {
+      let processedAllTransactions = false;
+
+      for (let i = 0; i < toCreate.length; i++) {
+        const newTransaction = toCreate[i];
+
+        if (newTransaction.cleared !== SaveTransaction.ClearedEnum.Cleared) {
+          continue;
+        }
+
+        const unclearedTransaction = ynabTransactions.find(
+          (t) =>
+            t.cleared === TransactionDetail.ClearedEnum.Uncleared &&
+            t.amount === newTransaction.amount
+        );
+
+        if (unclearedTransaction) {
+          logger.debug(
+            `Matched new transaction ${newTransaction.import_id} to uncleared transaction ${unclearedTransaction.import_id}.`
+          );
+
+          toCreate.splice(i, 1);
+
+          toUpdate.push({
+            ...newTransaction,
+            id: unclearedTransaction.id,
+          });
+
+          break;
+        }
+
+        if (i === toCreate.length - 1) {
+          processedAllTransactions = true;
+        }
+      }
+
+      if (processedAllTransactions || toCreate.length === 0) {
+        break;
+      }
     }
   }
 

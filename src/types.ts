@@ -31,6 +31,7 @@ export interface AccountConfig {
   provider: string;
   sourceAccountNumber: string;
   targetAccountId: string;
+  matchNewTransactionsWithUncleared?: boolean;
 }
 
 interface ProviderConfig {
