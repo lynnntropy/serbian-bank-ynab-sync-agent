@@ -20,6 +20,7 @@ export type BankTransaction = Pick<
 
 export interface Config {
   token: string;
+  schedule?: string;
   providers: {
     [key: string]: ProviderConfig;
   };
