@@ -105,6 +105,10 @@ const processAccount = async (
       let processedAllTransactions = false;
 
       for (let i = 0; i < toCreate.length; i++) {
+        if (i === toCreate.length - 1) {
+          processedAllTransactions = true;
+        }
+
         const newTransaction = toCreate[i];
 
         if (newTransaction.cleared !== SaveTransaction.ClearedEnum.Cleared) {
@@ -130,10 +134,6 @@ const processAccount = async (
           });
 
           break;
-        }
-
-        if (i === toCreate.length - 1) {
-          processedAllTransactions = true;
         }
       }
 
