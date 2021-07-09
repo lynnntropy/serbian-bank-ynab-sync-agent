@@ -73,8 +73,8 @@ const processAccount = async (
     `Fetched ${ynabTransactions.length} transactions for account ID ${accountConfig.targetAccountId}.`
   );
 
-  const toUpdate: UpdateTransaction[] = [];
-  const toCreate: SaveTransaction[] = [];
+  let toUpdate: UpdateTransaction[] = [];
+  let toCreate: SaveTransaction[] = [];
 
   for (const bankTransaction of bankTransactions) {
     const ynabTransaction = ynabTransactions.find(
@@ -131,6 +131,9 @@ const processAccount = async (
           toUpdate.push({
             ...newTransaction,
             id: unclearedTransaction.id,
+            memo:
+              (newTransaction.memo ?? "") +
+              ` [duplicate:${newTransaction.import_id}]`,
           });
 
           break;
@@ -142,6 +145,15 @@ const processAccount = async (
       }
     }
   }
+
+  // Don't create transactions we already know are duplicates of existing ones
+
+  toCreate = toCreate.filter(
+    (t) =>
+      ynabTransactions.find(
+        (yt) => yt.memo && yt.memo.includes(`[duplicate:${t.import_id}]`)
+      ) === undefined
+  );
 
   logger.debug(
     `Found ${toCreate.length} new transactions, ${toUpdate.length} to update.`
