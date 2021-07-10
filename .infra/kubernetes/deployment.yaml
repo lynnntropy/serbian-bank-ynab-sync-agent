@@ -19,7 +19,7 @@ spec:
           image: omegavesko/serbian-bank-ynab-sync-agent:latest
           volumeMounts:
             - mountPath: "/usr/src/app/config.json"
-                subPath: config.json
+              subPath: config.json
               name: config
               readOnly: true
       volumes:
