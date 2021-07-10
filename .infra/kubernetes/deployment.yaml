@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: serbian-bank-ynab-sync-agent
+  labels:
+    app: serbian-bank-ynab-sync-agent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: serbian-bank-ynab-sync-agent
+  template:
+    metadata:
+      labels:
+        app: serbian-bank-ynab-sync-agent
+    spec:
+      containers:
+        - name: serbian-bank-ynab-sync-agent
+          image: omegavesko/serbian-bank-ynab-sync-agent:latest
+          volumeMounts:
+            - mountPath: "/usr/src/app/config.json"
+                subPath: config.json
+              name: config
+              readOnly: true
+      volumes:
+        - name: config
+          secret:
+            secretName: config
+            items:
+              - key: config.json
+                path: config.json
