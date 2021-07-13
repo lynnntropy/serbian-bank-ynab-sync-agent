@@ -131,6 +131,7 @@ const processAccount = async (
           toUpdate.push({
             ...newTransaction,
             id: unclearedTransaction.id,
+            date: unclearedTransaction.date,
             memo:
               (newTransaction.memo ?? "") +
               ` [duplicate:${newTransaction.import_id}]`,
